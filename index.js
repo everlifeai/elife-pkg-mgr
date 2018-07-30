@@ -35,12 +35,15 @@ function installPkg(pkg, loc, cb) {
     let pkgloc = path.join(loc, name)
 
     if(fs.existsSync(pkgloc)) {
-        u.showMsg(`Package exists in location ${loc}...`)
-        cb(null)
+        u.showMsg(`Package exists in location '${pkgloc}/'...`)
+        cb(null, pkgloc)
     } else {
         clone_pkg_1((err) => {
             if(err) cb(err)
-            else yarn_setup_1(cb)
+            else yarn_setup_1((err) => {
+                if(err) cb(err)
+                else cb(null, pkgloc)
+            })
         })
     }
 
