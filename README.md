@@ -15,7 +15,7 @@ locally so they can be used. Packages include:
 ```js
 const pkgmgr = require('elife-pkg-mgr')
 
-let pkg = 'https://github.com/everlifeai/elife-utils.git'
+let pkg = 'everlifeai/elife-utils'
 let to_location = '1/2/3/4/'
 
 pkgmgr.load(pkg, to_location, (err) => {
@@ -24,4 +24,3 @@ pkgmgr.load(pkg, to_location, (err) => {
 })
 ```
 
-TBD: Map package paths to various everlife hosted repository locations

@@ -46,7 +46,19 @@ function installPkg(pkg, loc, cb) {
 
     function clone_pkg_1(cb) {
         u.showMsg(`Cloning ${pkg}...`)
+        pkg = get_pkg_url_1(pkg)
         exec('git', ['clone', pkg], loc, null, null, cb)
+    }
+
+    /*      outcome/
+     * Default to github if package location is not a full URL
+     */
+    function get_pkg_url_1(pkg) {
+        if(pkg.indexOf("://") < 0) {
+            return `https://github.com/${pkg}.git`
+        } else {
+            return pkg
+        }
     }
 
     function yarn_setup_1(cb) {

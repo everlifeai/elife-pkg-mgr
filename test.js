@@ -3,7 +3,7 @@
  */
 const pkgmgr = require('./')
 
-let pkg = 'https://github.com/everlifeai/elife-utils.git'
+let pkg = 'everlifeai/elife-utils'
 let to_location = '1/2/3/4/'
 
 pkgmgr.load(pkg, to_location, (err) => {
