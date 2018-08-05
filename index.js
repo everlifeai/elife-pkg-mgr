@@ -55,10 +55,12 @@ function installPkg(pkg, loc, cb) {
 
     /*      outcome/
      * Default to github if package location is not a full URL
+     * Use the current .ssh credentials to connect automatically even
+     * with private repositories.
      */
     function get_pkg_url_1(pkg) {
         if(pkg.indexOf("://") < 0) {
-            return `https://github.com/${pkg}.git`
+            return `git@github.com:${pkg}.git`
         } else {
             return pkg
         }
