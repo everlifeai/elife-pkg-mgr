@@ -7,6 +7,7 @@ const exec = require('./exec')
 
 module.exports = {
     load: load,
+    update: updatePkg,
 }
 
 
@@ -29,35 +30,23 @@ function load(pkg, path_, cb) {
 /*      outcome/
  * If the package is not yet installed, clone it and call
  * `yarn install` to set up the dependencies. If it is already present,
- * update it to the latest version then `yarn install` any new
- * dependencies.
+ * don't do anything.
  */
 function installPkg(pkg, loc, cb) {
     let name = path.basename(pkg, '.git')
     let pkgloc = path.join(loc, name)
 
     if(fs.existsSync(pkgloc)) {
-        update_pkg_1(pkgloc, (err) => {
-            if(err) cb(err)
-            else yarn_setup_1((err) => {
-                if(err) cb(err)
-                else cb(null, pkgloc)
-            })
-        })
+        u.showMsg(`Package exists in location '${pkgloc}/'...`)
+        cb(null, pkgloc)
     } else {
         clone_pkg_1((err) => {
             if(err) cb(err)
-            else yarn_setup_1((err) => {
+            else yarnSetup(pkgloc, (err) => {
                 if(err) cb(err)
                 else cb(null, pkgloc)
             })
         })
-    }
-
-    function update_pkg_1(pkgloc, cb) {
-        u.showMsg(`Updating ${pkg}...`)
-        pkg = get_pkg_url_1(pkg)
-        exec('git', ['pull', '--rebase', pkg], pkgloc, null, null, cb)
     }
 
     function clone_pkg_1(cb) {
@@ -78,12 +67,26 @@ function installPkg(pkg, loc, cb) {
             return pkg
         }
     }
-
-    function yarn_setup_1(cb) {
-        u.showMsg(`Yarn setup ${pkg}...`)
-        exec('yarn', ['install'], pkgloc, null, null, cb)
-    }
 }
 
+function yarnSetup(pkgloc, cb) {
+    u.showMsg(`Yarn setup ${pkgloc}...`)
+    exec('yarn', ['install'], pkgloc, null, null, cb)
+}
 
+function updatePkg(pkgloc, cb) {
+    update_pkg_1(pkgloc, (err) => {
+        yarnSetup(pkgloc, (err2) => {
+            if(err2) cb(err2)
+            else if(err) cb(err)
+            else cb()
+        })
+    })
+
+    function update_pkg_1(pkgloc, cb) {
+        u.showMsg(`Updating ${pkgloc}...`)
+        exec('git', ['pull', '--rebase'], pkgloc, null, null, cb)
+    }
+
+}
 
