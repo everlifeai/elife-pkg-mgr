@@ -28,15 +28,22 @@ function load(pkg, path_, cb) {
 
 /*      outcome/
  * If the package is not yet installed, clone it and call
- * `yarn install` to set up the dependencies.
+ * `yarn install` to set up the dependencies. If it is already present,
+ * update it to the latest version then `yarn install` any new
+ * dependencies.
  */
 function installPkg(pkg, loc, cb) {
     let name = path.basename(pkg, '.git')
     let pkgloc = path.join(loc, name)
 
     if(fs.existsSync(pkgloc)) {
-        u.showMsg(`Package exists in location '${pkgloc}/'...`)
-        cb(null, pkgloc)
+        update_pkg_1(pkgloc, (err) => {
+            if(err) cb(err)
+            else yarn_setup_1((err) => {
+                if(err) cb(err)
+                else cb(null, pkgloc)
+            })
+        })
     } else {
         clone_pkg_1((err) => {
             if(err) cb(err)
@@ -45,6 +52,12 @@ function installPkg(pkg, loc, cb) {
                 else cb(null, pkgloc)
             })
         })
+    }
+
+    function update_pkg_1(pkgloc, cb) {
+        u.showMsg(`Updating ${pkg}...`)
+        pkg = get_pkg_url_1(pkg)
+        exec('git', ['pull', '--rebase', pkg], pkgloc, null, null, cb)
     }
 
     function clone_pkg_1(cb) {
