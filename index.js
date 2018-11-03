@@ -68,6 +68,9 @@ function installPkg(pkg, loc, cb) {
         if(pkg.indexOf("/") > 0) {
             return `https://github.com/${pkg}.git`
         }
+        if(pkg.startsWith("eskill-") > 0) {
+            return `https://github.com/everlifeai/${pkg}.git`
+        }
         return `https://github.com/everlifeai/eskill-${pkg}.git`
     }
 }
