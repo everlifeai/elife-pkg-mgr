@@ -56,16 +56,19 @@ function installPkg(pkg, loc, cb) {
     }
 
     /*      outcome/
-     * Default to github if package location is not a full URL
-     * Use the current .ssh credentials to connect automatically even
-     * with private repositories.
+     * If the package is a complete url we just use it. Otherwise we
+     * check if we are given a package in the format `org/repo` and
+     * assume it is a github URL. Otherwise we default to a Everlife
+     * skill repo on github (with prefix `eskill-`)
      */
     function get_pkg_url_1(pkg) {
-        if(pkg.indexOf("://") < 0) {
-            return `git@github.com:${pkg}.git`
-        } else {
+        if(pkg.indexOf("://") > 0) {
             return pkg
         }
+        if(pkg.indexOf("/") > 0) {
+            return `https://github.com/${pkg}.git`
+        }
+        return `https://github.com/everlifeai/eskill-${pkg}.git`
     }
 }
 
