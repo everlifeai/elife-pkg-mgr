@@ -33,6 +33,7 @@ function load(pkg, path_, cb) {
  * don't do anything.
  */
 function installPkg(pkg, loc, cb) {
+    pkg = get_pkg_url_1(pkg)
     let name = path.basename(pkg, '.git')
     let pkgloc = path.join(loc, name)
 
@@ -40,7 +41,7 @@ function installPkg(pkg, loc, cb) {
         u.showMsg(`Package exists in location '${pkgloc}/'...`)
         cb(null, pkgloc)
     } else {
-        clone_pkg_1((err) => {
+        clone_pkg_1(pkg, (err) => {
             if(err) cb(err)
             else yarnSetup(pkgloc, (err) => {
                 if(err) cb(err)
@@ -49,9 +50,8 @@ function installPkg(pkg, loc, cb) {
         })
     }
 
-    function clone_pkg_1(cb) {
+    function clone_pkg_1(pkg, cb) {
         u.showMsg(`Cloning ${pkg}...`)
-        pkg = get_pkg_url_1(pkg)
         exec('git', ['clone', pkg], loc, null, null, cb)
     }
 
