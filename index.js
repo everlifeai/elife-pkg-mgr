@@ -77,7 +77,7 @@ function installPkg(pkg, loc, cb) {
 
 function yarnSetup(pkgloc, cb) {
     u.showMsg(`Yarn setup ${pkgloc}...`)
-    exec('yarn', ['install'], pkgloc, null, null, cb)
+    exec((/^win/.test(process.platform)?'yarn.cmd':'yarn'), ['install'], pkgloc, null, null, cb)
 }
 
 function updatePkg(pkgloc, cb) {
