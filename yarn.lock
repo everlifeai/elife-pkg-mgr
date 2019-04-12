@@ -3,5 +3,5 @@
 
 
 elife-utils@everlifeai/elife-utils:
-  version "0.1.0"
-  resolved "git+ssh://git@github.com/everlifeai/elife-utils.git#6a0677ea5d5edfb2a7925c28b9da8fef1fedcb84"
+  version "0.2.0"
+  resolved "https://codeload.github.com/everlifeai/elife-utils/tar.gz/97c50f3aab4e5e6c13a8105440656823bba36262"
