@@ -29,7 +29,7 @@ function load(pkg, path_, cb) {
 
 /*      outcome/
  * If the package is not yet installed, clone it and call
- * `yarn install` to set up the dependencies. If it is already present,
+ * `npm install` to set up the dependencies. If it is already present,
  * don't do anything.
  */
 function installPkg(pkg, loc, cb) {
@@ -43,7 +43,7 @@ function installPkg(pkg, loc, cb) {
     } else {
         clone_pkg_1(pkg, (err) => {
             if(err) cb(err)
-            else yarnSetup(pkgloc, (err) => {
+            else npmSetup(pkgloc, (err) => {
                 if(err) cb(err)
                 else cb(null, pkgloc)
             })
@@ -75,14 +75,14 @@ function installPkg(pkg, loc, cb) {
     }
 }
 
-function yarnSetup(pkgloc, cb) {
-    u.showMsg(`Yarn setup ${pkgloc}...`)
-    exec((/^win/.test(process.platform)?'yarn.cmd':'yarn'), ['install'], pkgloc, null, null, cb)
+function npmSetup(pkgloc, cb) {
+    u.showMsg(`NPM setup ${pkgloc}...`)
+    exec((/^win/.test(process.platform)?'npm.cmd':'npm'), ['install'], pkgloc, null, null, cb)
 }
 
 function updatePkg(pkgloc, cb) {
     update_pkg_1(pkgloc, (err) => {
-        yarnSetup(pkgloc, (err2) => {
+        npmSetup(pkgloc, (err2) => {
             if(err2) cb(err2)
             else if(err) cb(err)
             else cb()
