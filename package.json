@@ -1,6 +1,6 @@
 {
   "name": "elife-pkg-mgr",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Download and Install Everlife Packages",
   "main": "index.js",
   "repository": "https://github.com/everlifeai/elife-pkg-mgr.git",
