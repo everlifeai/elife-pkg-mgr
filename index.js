@@ -136,7 +136,7 @@ function installPkg(pkg, loc, cb) {
     let pkgloc = path.join(loc, pkg.name)
 
     u.showMsg(`Cloning into '${pkgloc}/'...`)
-    Git.Clone(pkg, pkgloc,
+    Git.Clone(pkg.fetch, pkgloc, {
         fetchOpts: {
             callbacks: {
                 certificateCheck: function() {
@@ -145,13 +145,13 @@ function installPkg(pkg, loc, cb) {
                     return 0;
                 }
             }
-        }).then((repo) => {
-            npmSetup(pkgloc, (err) => {
-                if(err) cb(err)
-                else cb(null, pkgloc)
-            })
+        }
+    }).then((repo) => {
+        npmSetup(pkgloc, (err) => {
+            if(err) cb(err)
+            else cb(null, pkgloc)
         })
-        .catch(cb)
+    }).catch(cb)
 
     /*      outcome/
      * If the package is a complete url we just use it. Otherwise we
