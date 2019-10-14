@@ -3,11 +3,12 @@ const fs = require('fs')
 const path = require('path')
 const u = require('elife-utils')
 const exec = require('./exec')
-const Git = require('nodegit')
 
 
 module.exports = {
     load: load,
+    update: updatePkg,
+
     installLatest: installLatest,
 }
 
@@ -134,24 +135,18 @@ function load(pkg, path_, cb) {
  */
 function installPkg(pkg, loc, cb) {
     let pkgloc = path.join(loc, pkg.name)
-
-    u.showMsg(`Cloning into '${pkgloc}/'...`)
-    Git.Clone(pkg.fetch, pkgloc, {
-        fetchOpts: {
-            callbacks: {
-                certificateCheck: function() {
-                    // github will fail cert check on some OSX machines
-                    // this overrides that check
-                    return 0;
-                }
-            }
-        }
-    }).then((repo) => {
-        npmSetup(pkgloc, (err) => {
+    clone_pkg_1(pkg.fetch, (err) => {
+        if(err) cb(err)
+        else npmSetup(pkgloc, (err) => {
             if(err) cb(err)
             else cb(null, pkgloc)
         })
-    }).catch(cb)
+    })
+
+    function clone_pkg_1(pkg, cb) {
+        u.showMsg(`Cloning ${pkg}...`)
+        exec('git', ['clone', pkg], loc, null, null, cb)
+    }
 
     /*      outcome/
      * If the package is a complete url we just use it. Otherwise we
@@ -177,3 +172,20 @@ function npmSetup(pkgloc, cb) {
     u.showMsg(`NPM setup ${pkgloc}...`)
     exec((/^win/.test(process.platform)?'npm.cmd':'npm'), ['install'], pkgloc, null, null, cb)
 }
+
+function updatePkg(pkgloc, cb) {
+    update_pkg_1(pkgloc, (err) => {
+        npmSetup(pkgloc, (err2) => {
+            if(err2) cb(err2)
+            else if(err) cb(err)
+            else cb()
+        })
+    })
+
+    function update_pkg_1(pkgloc, cb) {
+        u.showMsg(`Updating ${pkgloc}...`)
+        exec('git', ['pull', '--rebase'], pkgloc, null, null, cb)
+    }
+
+}
+

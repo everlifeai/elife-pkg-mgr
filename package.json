@@ -7,7 +7,6 @@
   "author": "charles.lobo@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "elife-utils": "everlifeai/elife-utils",
-    "nodegit": "^0.26.2"
+    "elife-utils": "everlifeai/elife-utils"
   }
 }
