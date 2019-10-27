@@ -6,6 +6,9 @@
   "repository": "https://github.com/everlifeai/elife-pkg-mgr.git",
   "author": "charles.lobo@gmail.com",
   "license": "MIT",
+  "scripts": {
+      "test": "node test"
+  },
   "dependencies": {
     "@elife/utils": "^2.1.1"
   }
