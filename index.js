@@ -1,7 +1,7 @@
 'use strict'
 const fs = require('fs')
 const path = require('path')
-const u = require('elife-utils')
+const u = require('@elife/utils')
 const exec = require('./exec')
 
 

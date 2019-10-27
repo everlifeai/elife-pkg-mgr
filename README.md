@@ -27,7 +27,7 @@ contracts.
 ## Quick start
 
 ```js
-const pkgmgr = require('elife-pkg-mgr')
+const pkgmgr = require('@elife/pkg-mgr')
 
 let pkg = 'everlifeai/elife-utils'
 let to_location = '1/2/3/4/'

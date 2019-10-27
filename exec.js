@@ -1,6 +1,6 @@
 'use strict'
 const proc = require('child_process')
-const u = require('elife-utils')
+const u = require('@elife/utils')
 
 /*      understand/
  * `proc.spawn` creates an `EventEmitter` with the following events:
