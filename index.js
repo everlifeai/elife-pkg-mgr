@@ -3,13 +3,14 @@ const fs = require('fs')
 const path = require('path')
 const u = require('@elife/utils')
 const exec = require('./exec')
-
+const git = require('nodegit')
 
 module.exports = {
     load: load,
     update: updatePkg,
 
     installLatest: installLatest,
+    normalize: normalize
 }
 
 /*      problem/
@@ -64,32 +65,38 @@ function normalize(pkg) {
 
 /*      problem/
  * We need to install the latest version of the package in the given
- * location.
+ * location not in ASAR file path.
  *
  *      way/
- * After ensuring the given location exists, we normalize the package
+ * If the given path is ASAR path, we are returning a given path,
+ * because all the everlife packages are preloaded in the ASAR file.
+ * Else We will ensure the given location exists, we normalize the package
  * name and delete if it already exists. Then we install the package
  * into the given location.
  */
 function installLatest(pkg, path_, cb) {
     pkg = normalize(pkg)
     u.showMsg(`Installing ${pkg.name}...`)
-    u.ensureExists(path_, (err, loc) => {
-        if(err) cb(err)
-        else {
-            let pkgloc = path.join(loc, pkg.name)
-            if(fs.existsSync(pkgloc)) {
-                u.showMsg(`Deleting package from '${pkgloc}/'...`)
-                del_pkg_1(pkgloc, (err) => {
-                    if(err) cb(err)
-                    else installPkg(pkg, loc, cb)
-                })
-            } else {
-                installPkg(pkg, loc, cb)
+    if(path_.includes('/app.asar/')) {
+        cb(null, path.join(path_, pkg.name))
+    } else{
+        u.ensureExists(path_, (err, loc) => {
+            if(err) cb(err)
+            else {
+                let pkgloc = path.join(loc, pkg.name)
+                if(fs.existsSync(pkgloc)) {
+                    u.showMsg(`Deleting package from '${pkgloc}/'...`)
+                    del_pkg_1(pkgloc, (err) => {
+                        if(err) cb(err)
+                        else installPkg(pkg, loc, cb)
+                    })
+                } else {
+                    installPkg(pkg, loc, cb)
+                }
             }
-        }
-    })
-
+        })
+    }
+    
     /*      outcome/
      * Because deleting a directory recursively is a dangerous
      * operation, we perform a sanity check that the directory does seem
@@ -106,28 +113,35 @@ function installLatest(pkg, path_, cb) {
 
 /*      problem/
  * We need to ensure an everlife packaged code is installed in a given
- * location.
+ * location not in ASAR file path.
  *
  *      way/
- * After ensuring the given location exists, we normalize the package
+ * If the given path is ASAR path, we are returning a given path,
+ * because all the everlife packages are preloaded in the ASAR file.
+ * Else we will ensure the given location exists, we normalize the package
  * name and check if it already exists. If it does we do nothing
  * otherwise we install the package into the given location.
  */
 function load(pkg, path_, cb) {
     pkg = normalize(pkg)
     u.showMsg(`Ensuring ${pkg.name} loaded...`)
-    u.ensureExists(path_, (err, loc) => {
-        if(err) cb(err)
-        else {
-            let pkgloc = path.join(loc, pkg.name)
-            if(fs.existsSync(pkgloc)) {
-                u.showMsg(`Package exists in location '${pkgloc}/'...`)
-                cb(null, pkgloc)
-            } else {
-                installPkg(pkg, loc, cb)
+    if(path_.includes('/app.asar/')) {
+        cb(null, path.join(path_, pkg.name))
+    } else{
+        u.ensureExists(path_, (err, loc) => {
+            if(err) cb(err)
+            else {
+                let pkgloc = path.join(loc, pkg.name)
+                if(fs.existsSync(pkgloc)) {
+                    u.showMsg(`Package exists in location '${pkgloc}/'...`)
+                    cb(null, pkgloc)
+                } else {
+                    installPkg(pkg, loc, cb)
+                }
             }
-        }
-    })
+        })
+    }
+    
 }
 
 /*      outcome/
@@ -145,26 +159,25 @@ function installPkg(pkg, loc, cb) {
 
     function clone_pkg_1(pkg, cb) {
         u.showMsg(`Cloning ${pkg}...`)
-        exec('git', ['clone', pkg], loc, null, null, cb)
-    }
-
-    /*      outcome/
-     * If the package is a complete url we just use it. Otherwise we
-     * check if we are given a package in the format `org/repo` and
-     * assume it is a github URL. Otherwise we default to a Everlife
-     * skill repo on github (with prefix `eskill-`)
-     */
-    function get_pkg_url_1(pkg) {
-        if(pkg.indexOf("://") > 0) {
-            return pkg
-        }
-        if(pkg.indexOf("/") > 0) {
-            return `https://github.com/${pkg}.git`
-        }
-        if(pkg.startsWith("eskill-") > 0) {
-            return `https://github.com/everlifeai/${pkg}.git`
-        }
-        return `https://github.com/everlifeai/eskill-${pkg}.git`
+        
+        u.ensureExists(pkgloc, (err) => {
+            git.Clone(pkg, pkgloc, {
+                fetchOpts: {
+                    callbacks: {
+                        certificateCheck: function() {
+                            return 0;
+                        }
+                    }
+                }
+            }).then((repo) => {
+                cb()
+            }).catch((err) => {
+                u.showErr(err)
+                u.rmdir(pkgloc, (err) => {
+                    cb('Installation failed')
+                })
+            })
+        })
     }
 }
 
