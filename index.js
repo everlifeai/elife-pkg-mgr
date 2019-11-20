@@ -77,7 +77,8 @@ function normalize(pkg) {
 function installLatest(pkg, path_, cb) {
     pkg = normalize(pkg)
     u.showMsg(`Installing ${pkg.name}...`)
-    if(path_.includes('/app.asar/')) {
+    if  (path_.includes('/app.asar/') ||
+            path_.includes('\\app.asar\\')) {
         cb(null, path.join(path_, pkg.name))
     } else{
         u.ensureExists(path_, (err, loc) => {
@@ -125,7 +126,8 @@ function installLatest(pkg, path_, cb) {
 function load(pkg, path_, cb) {
     pkg = normalize(pkg)
     u.showMsg(`Ensuring ${pkg.name} loaded...`)
-    if(path_.includes('/app.asar/')) {
+    if (path_.includes('/app.asar/') ||
+            path_.includes('\\app.asar\\')) {
         cb(null, path.join(path_, pkg.name))
     } else{
         u.ensureExists(path_, (err, loc) => {
