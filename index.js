@@ -3,7 +3,8 @@ const fs = require('fs')
 const path = require('path')
 const u = require('@elife/utils')
 const exec = require('./exec')
-const git = require('nodegit')
+const git = require('isomorphic-git')
+const http = require('isomorphic-git/http/node')
 
 module.exports = {
     load: load,
@@ -159,21 +160,22 @@ function installPkg(pkg, loc, cb) {
         })
     })
 
-    function clone_pkg_1(pkg, cb) {
-        u.showMsg(`Cloning ${pkg}...`)
+    function clone_pkg_1(url, cb) {
+        u.showMsg(`Cloning ${url}...`)
         
+            console.log({
+                pkgloc,
+                url,
+            })
         u.ensureExists(pkgloc, (err) => {
-            git.Clone(pkg, pkgloc, {
-                fetchOpts: {
-                    callbacks: {
-                        certificateCheck: function() {
-                            return 0;
-                        }
-                    }
-                }
-            }).then((repo) => {
-                cb()
-            }).catch((err) => {
+            git.clone({
+                fs,
+                http,
+                dir: pkgloc,
+                url,
+            })
+            .then(() => cb())
+            .catch(err => {
                 u.showErr(err)
                 u.rmdir(pkgloc, (err) => {
                     cb('Installation failed')
