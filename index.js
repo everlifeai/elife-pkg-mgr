@@ -98,7 +98,7 @@ function installLatest(pkg, path_, cb) {
             }
         })
     }
-    
+
     /*      outcome/
      * Because deleting a directory recursively is a dangerous
      * operation, we perform a sanity check that the directory does seem
@@ -144,7 +144,7 @@ function load(pkg, path_, cb) {
             }
         })
     }
-    
+
 }
 
 /*      outcome/
@@ -162,11 +162,7 @@ function installPkg(pkg, loc, cb) {
 
     function clone_pkg_1(url, cb) {
         u.showMsg(`Cloning ${url}...`)
-        
-            console.log({
-                pkgloc,
-                url,
-            })
+
         u.ensureExists(pkgloc, (err) => {
             git.clone({
                 fs,
