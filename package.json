@@ -10,7 +10,7 @@
     "test": "node test"
   },
   "dependencies": {
-    "@elife/utils": "^3.1.0",
+    "@elife/utils": "^4.0.0",
     "isomorphic-git": "^1.8.1"
   }
 }
